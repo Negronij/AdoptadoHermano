@@ -48,31 +48,73 @@
 
 <div class="container">
     <h1>¿Quién es el hermano adoptado?</h1>
+    
+    <!-- Formulario para seleccionar la cantidad de hermanos -->
     <form id="voting-form">
+        <h2>Selecciona la cantidad de hermanos</h2>
         <div class="vote-option">
-            <input type="radio" id="franco" name="hermano" value="Franco">
-            <label for="franco">Franco</label>
+            <input type="radio" id="3-hermanos" name="cantidad" value="3">
+            <label for="3-hermanos">3 Hermanos</label>
         </div>
         <div class="vote-option">
-            <input type="radio" id="juani" name="hermano" value="Juani">
-            <label for="juani">Juani</label>
+            <input type="radio" id="4-hermanos" name="cantidad" value="4">
+            <label for="4-hermanos">4 Hermanos</label>
         </div>
-        <div class="vote-option">
-            <input type="radio" id="rocio" name="hermano" value="Rocio">
-            <label for="rocio">Rocío</label>
-        </div>
-        <button type="submit">Votar</button>
+        <button type="button" id="next-step">Siguiente</button>
     </form>
+
+    <!-- Sección para votar quién es el hermano adoptado (oculta inicialmente) -->
+    <div id="voting-step" style="display:none;">
+        <h2>Selecciona quién es el hermano adoptado</h2>
+        <form id="adopted-form">
+            <div class="vote-option">
+                <input type="radio" id="hermano1" name="hermano" value="El primer hermano">
+                <label for="hermano1">El primer hermano</label>
+            </div>
+            <div class="vote-option">
+                <input type="radio" id="hermano2" name="hermano" value="El segundo hermano">
+                <label for="hermano2">El segundo hermano</label>
+            </div>
+            <div class="vote-option">
+                <input type="radio" id="hermano3" name="hermano" value="El tercer hermano">
+                <label for="hermano3">El tercer hermano</label>
+            </div>
+            <div class="vote-option">
+                <input type="radio" id="hermano4" name="hermano" value="El cuarto hermano">
+                <label for="hermano4">El cuarto hermano</label>
+            </div>
+            <button type="submit">Votar</button>
+        </form>
+    </div>
 </div>
 
 <script>
-    document.getElementById("voting-form").addEventListener("submit", function(event) {
+    // Paso 1: Mostrar la sección para elegir al hermano adoptado
+    document.getElementById('next-step').addEventListener('click', function() {
+        const cantidadSeleccionada = document.querySelector('input[name="cantidad"]:checked');
+        if (cantidadSeleccionada) {
+            const cantidad = cantidadSeleccionada.value;
+            document.getElementById('voting-step').style.display = 'block';
+            
+            // Ajustar las opciones de votación según la cantidad de hermanos
+            const opciones = document.querySelectorAll('.vote-option input');
+            opciones.forEach(option => option.style.display = 'none'); // Ocultar todas las opciones
+            for (let i = 0; i < cantidad; i++) {
+                document.getElementById('hermano' + (i + 1)).parentElement.style.display = 'block'; // Mostrar las opciones necesarias
+            }
+        } else {
+            alert('Por favor, selecciona la cantidad de hermanos primero.');
+        }
+    });
+
+    // Paso 2: Manejar el envío del formulario de votación
+    document.getElementById('adopted-form').addEventListener('submit', function(event) {
         event.preventDefault();
         const selectedOption = document.querySelector('input[name="hermano"]:checked');
         if (selectedOption) {
-            alert("Has votado por: " + selectedOption.value);
+            alert('Has votado por: ' + selectedOption.value);
         } else {
-            alert("Por favor, selecciona un hermano para votar.");
+            alert('Por favor, selecciona un hermano.');
         }
     });
 </script>
