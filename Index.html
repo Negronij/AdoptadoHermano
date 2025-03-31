@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Votación: ¿Quién es el hermano adoptado?</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            margin: auto;
+        }
+        h1 {
+            text-align: center;
+            font-size: 24px;
+        }
+        .vote-option {
+            margin: 10px 0;
+        }
+        .vote-option input {
+            margin-right: 10px;
+        }
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>¿Quién es el hermano adoptado?</h1>
+    <form id="voting-form">
+        <div class="vote-option">
+            <input type="radio" id="franco" name="hermano" value="Franco">
+            <label for="franco">Franco</label>
+        </div>
+        <div class="vote-option">
+            <input type="radio" id="juani" name="hermano" value="Juani">
+            <label for="juani">Juani</label>
+        </div>
+        <div class="vote-option">
+            <input type="radio" id="rocio" name="hermano" value="Rocio">
+            <label for="rocio">Rocío</label>
+        </div>
+        <button type="submit">Votar</button>
+    </form>
+</div>
+
+<script>
+    document.getElementById("voting-form").addEventListener("submit", function(event) {
+        event.preventDefault();
+        const selectedOption = document.querySelector('input[name="hermano"]:checked');
+        if (selectedOption) {
+            alert("Has votado por: " + selectedOption.value);
+        } else {
+            alert("Por favor, selecciona un hermano para votar.");
+        }
+    });
+</script>
+
+</body>
+</html>
