@@ -42,6 +42,13 @@
         button:hover {
             background-color: #45a049;
         }
+        .results {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .result {
+            margin: 5px 0;
+        }
     </style>
 </head>
 <body>
@@ -51,59 +58,53 @@
     
     <!-- Formulario para seleccionar la cantidad de hermanos -->
     <form id="voting-form">
-        <h2>Selecciona la cantidad de hermanos</h2>
-        <div class="vote-option">
-            <input type="radio" id="3-hermanos" name="cantidad" value="3">
-            <label for="3-hermanos">3 Hermanos</label>
-        </div>
-        <div class="vote-option">
-            <input type="radio" id="4-hermanos" name="cantidad" value="4">
-            <label for="4-hermanos">4 Hermanos</label>
-        </div>
+        <h2>¿Cuántos hermanos hay?</h2>
+        <input type="number" id="cantidad-hermanos" min="1" placeholder="Número de hermanos" required>
         <button type="button" id="next-step">Siguiente</button>
     </form>
 
     <!-- Sección para votar quién es el hermano adoptado (oculta inicialmente) -->
     <div id="voting-step" style="display:none;">
         <h2>Selecciona quién es el hermano adoptado</h2>
-        <form id="adopted-form">
-            <div class="vote-option">
-                <input type="radio" id="hermano1" name="hermano" value="El primer hermano">
-                <label for="hermano1">El primer hermano</label>
-            </div>
-            <div class="vote-option">
-                <input type="radio" id="hermano2" name="hermano" value="El segundo hermano">
-                <label for="hermano2">El segundo hermano</label>
-            </div>
-            <div class="vote-option">
-                <input type="radio" id="hermano3" name="hermano" value="El tercer hermano">
-                <label for="hermano3">El tercer hermano</label>
-            </div>
-            <div class="vote-option">
-                <input type="radio" id="hermano4" name="hermano" value="El cuarto hermano">
-                <label for="hermano4">El cuarto hermano</label>
-            </div>
-            <button type="submit">Votar</button>
-        </form>
+        <form id="adopted-form"></form>
+    </div>
+
+    <!-- Mostrar resultados de votación -->
+    <div id="results" class="results" style="display: none;">
+        <h2>Resultados</h2>
+        <div id="result-vote"></div>
+        <h3>Top 3 más votados:</h3>
+        <div id="top-votes"></div>
     </div>
 </div>
 
 <script>
-    // Paso 1: Mostrar la sección para elegir al hermano adoptado
+    let votos = {};  // Almacenamos los votos de cada hermano
+    let totalVotos = 0;
+    let cantidadHermanos = 0;
+
+    // Paso 1: Mostrar el número de hermanos y generar opciones de votación
     document.getElementById('next-step').addEventListener('click', function() {
-        const cantidadSeleccionada = document.querySelector('input[name="cantidad"]:checked');
-        if (cantidadSeleccionada) {
-            const cantidad = cantidadSeleccionada.value;
-            document.getElementById('voting-step').style.display = 'block';
-            
-            // Ajustar las opciones de votación según la cantidad de hermanos
-            const opciones = document.querySelectorAll('.vote-option input');
-            opciones.forEach(option => option.style.display = 'none'); // Ocultar todas las opciones
-            for (let i = 0; i < cantidad; i++) {
-                document.getElementById('hermano' + (i + 1)).parentElement.style.display = 'block'; // Mostrar las opciones necesarias
+        const cantidadInput = document.getElementById('cantidad-hermanos');
+        cantidadHermanos = parseInt(cantidadInput.value);
+        
+        if (cantidadHermanos > 0) {
+            // Mostrar opciones de votación
+            let formHTML = '';
+            for (let i = 1; i <= cantidadHermanos; i++) {
+                formHTML += `
+                    <div class="vote-option">
+                        <input type="radio" id="hermano${i}" name="hermano" value="Hermano ${i}">
+                        <label for="hermano${i}">Hermano ${i}</label>
+                    </div>
+                `;
+                votos[`Hermano ${i}`] = 0;  // Inicializamos los votos
             }
+            document.getElementById('adopted-form').innerHTML = formHTML;
+            document.getElementById('voting-step').style.display = 'block';
+            document.getElementById('voting-form').style.display = 'none';
         } else {
-            alert('Por favor, selecciona la cantidad de hermanos primero.');
+            alert('Por favor, ingresa un número válido de hermanos.');
         }
     });
 
@@ -112,12 +113,45 @@
         event.preventDefault();
         const selectedOption = document.querySelector('input[name="hermano"]:checked');
         if (selectedOption) {
-            alert('Has votado por: ' + selectedOption.value);
+            const voto = selectedOption.value;
+            votos[voto] += 1;
+            totalVotos += 1;
+
+            // Mostrar el voto del usuario
+            document.getElementById('result-vote').innerHTML = `<p>Has votado por: ${voto}</p>`;
+
+            // Calcular y mostrar el porcentaje de votos
+            mostrarResultados();
         } else {
             alert('Por favor, selecciona un hermano.');
         }
     });
+
+    // Mostrar resultados de votación y los 3 más votados
+    function mostrarResultados() {
+        const hermanos = Object.keys(votos);
+        
+        // Calcular porcentaje de votos para cada hermano
+        const resultados = hermanos.map(hermano => {
+            const porcentaje = totalVotos > 0 ? ((votos[hermano] / totalVotos) * 100).toFixed(2) : 0;
+            return { nombre: hermano, porcentaje: parseFloat(porcentaje) };
+        });
+
+        // Ordenar por votos descendentes
+        resultados.sort((a, b) => b.porcentaje - a.porcentaje);
+
+        // Mostrar el top 3 de más votados
+        let topVotesHTML = '';
+        for (let i = 0; i < 3 && i < resultados.length; i++) {
+            topVotesHTML += `<div class="result">${resultados[i].nombre}: ${resultados[i].porcentaje}%</div>`;
+        }
+        
+        // Mostrar los resultados
+        document.getElementById('top-votes').innerHTML = topVotesHTML;
+        document.getElementById('results').style.display = 'block';
+    }
 </script>
 
 </body>
 </html>
+
